@@ -7,9 +7,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Solenoid;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,7 +25,10 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
+  Drivetrain drive;
+  private Joystick joystick;
+  private Joystick joystick2;
+  private AutoDrivetrain a;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -35,8 +40,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     Vision vision = new Vision();
     AutoFire autofire = new AutoFire();
+    drive = new Drivetrain(9, 10, 5, 6);
     vision.start();
     autofire.start();
+    joystick = new Joystick(0);
+    joystick2 = new Joystick(1);
+    a = new AutoDrivetrain(drive);
+    a.start();
   }
 
   /**
@@ -80,7 +90,7 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-        // Put default auto code here
+      drive.drive(joystick.getRawAxis(2), 0);
         break;
     }
   }
@@ -90,7 +100,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-  }
+    drive.drive(joystick.getRawAxis(1), joystick2.getRawAxis(0));
+    }
 
   /**
    * This function is called periodically during test mode.

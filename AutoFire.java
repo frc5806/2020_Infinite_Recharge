@@ -3,9 +3,10 @@ public class AutoFire extends Thread implements RobotData{
     private boolean enable = true;
     public void run(){
         while(!enable){
-            Data.enableAF = enable;
+            Data.AFenabled = enable;
 
         }
+        Data.AFenabled = false;
     }
     public void enableC(){
         enable=!enable;

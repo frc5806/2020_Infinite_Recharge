@@ -5,7 +5,14 @@ final class Data{
     public static double l = 0;
     public static double d = 0;
     public static double a = 0;
-    public static boolean enableV = false;
-    public static boolean enableAF = false;
-
+    public static boolean Venabled = false;
+    public static boolean AFenabled = false;
+    public static boolean stopAutoDrive = false;
+    public static boolean moving = false;
+    public static boolean turning = false;
+    public static boolean ADEnabled = false;
+    public static boolean armIsRaised = false;
+    public static double roboVel = 0;
+    public static double roboTVel = 0;
+    public static boolean onRight = false;
 }

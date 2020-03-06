@@ -31,9 +31,10 @@ public class Vision extends Thread implements RobotData {
             Data.l = this.l;
             Data.a = this.a;
             Data.d = this.d;
-            Data.enableV = enable;
+            Data.Venabled = enable;
             updateDash();
     }
+    Data.Venabled=false;
 }
     public void enableC(){
         enable=!enable;

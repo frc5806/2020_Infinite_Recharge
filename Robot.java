@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,7 +25,16 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
+  Drivetrain drive;
+  private Joystick joystickR;
+  private Joystick joystickL;
+  private Joystick buttonBoard;
+  private AutoDrivetrain a;
+  private Intake in;
+  private Hopper hop;
+  private Climb climb;
+  private Turret turret;
+  private Compressor comp;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -34,9 +45,19 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     Vision vision = new Vision();
-    AutoFire autofire = new AutoFire();
+    drive = new Drivetrain(4, 3, 10, 9);
+    comp = new Compressor();
     vision.start();
+    joystickR = new Joystick(1);
+    turret = new Turret(1);
+    AutoFire autofire = new AutoFire(turret, drive);
     autofire.start();
+    joystickL = new Joystick(2);
+    buttonBoard = new Joystick(0);
+    a = new AutoDrivetrain(drive);
+    in = new Intake(7);
+    hop = new Hopper(8, 6);
+    climb = new Climb(0);
   }
 
   /**
@@ -80,19 +101,54 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-        // Put default auto code here
         break;
     }
   }
-
+ 
   /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
-  }
+    //drive.drive(joystick.getRawAxis(1), joystick2.getRawAxis(0));
+    //drive.drive(joystickR.getRawAxis(1), joystickL.getRawAxis(0));
+    if(joystickR.getRawButtonPressed(5))
+      climb.changeArm();
 
-  /**
+    if(joystickR.getRawButton(2)&&Data.armIsRaised){
+      System.out.println(joystickR.getRawAxis(2));
+      climb.winch(joystickR.getRawAxis(2));
+      drive.safteyDrive();
+    }
+    else{
+      drive.drive(joystickR.getRawAxis(1), joystickL.getRawAxis(0));
+      climb.winchStop();
+    }
+
+    if(joystickR.getRawButton(2)&&!Data.armIsRaised){
+      turret.turn(joystickR.getRawAxis(2));
+    }
+    else{
+      turret.stop();
+    }
+    if(joystickR.getRawButton(1))
+      in.spin(1);
+    else
+      in.spinDown();
+      if(joystickR.getRawButtonPressed(6))
+        if(comp.enabled())
+          comp.stop();
+        else
+          comp.start();
+    if(buttonBoard.getRawButton(1))
+      climb.winchOut();
+    else if(buttonBoard.getRawButton(2))
+      climb.winchIn();
+    else
+      climb.winchStop();
+      SmartDashboard.putBoolean("Arm is raised", Data.armIsRaised);
+  }
+    /**
    * This function is called periodically during test mode.
    */
   @Override
